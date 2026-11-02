@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AL_CheatMenu</title>
+<meta name="description" content="In-game cheat window for Amanatsu Location: heroine stats, energy, H counts, time of day and flags. BepInEx 6 IL2CPP.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;600&family=Nunito+Sans:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<nav class="top"><div class="in">
+  <a class="brand" href="#">AL_<span>CheatMenu</span></a>
+  <a class="l" href="#install">Install</a><a class="l" href="#features">Features</a><a class="l" href="#how">How it works</a><a class="l" href="#troubleshooting">Troubleshooting</a><a class="l" href="#changelog">Changelog</a>
+  <span class="sp"></span>
+  <a class="l" href="https://github.com/__GH_USER__/AL_CheatMenu">GitHub</a>
+</div></nav>
+<div class="wrap">
+<header class="hero">
+  <div>
+    <div class="eyebrow">Amanatsu Location · BepInEx 6 IL2CPP</div>
+    <h1>Press F7. Edit the save while you play.</h1>
+    <p class="lede">A cheat window built on the game's own UI: every heroine's stats and levels, energy, H and massage counts, H gauges, the time of day and the global flags. Changes apply immediately to the live save.</p>
+    <div class="cta">
+      <a class="btn primary" href="https://github.com/__GH_USER__/AL_CheatMenu/releases/latest">Download latest release</a>
+      <a class="btn" href="https://github.com/__GH_USER__/AL_CheatMenu">Source on GitHub</a>
+    </div>
+  </div>
+  <div class="facts"><dl>
+    <dt>Version</dt><dd>0.2.1</dd>
+    <dt>Game</dt><dd>Amanatsu Location (Steam build, Unity 6000.0.65f1)</dd>
+    <dt>Needs</dt><dd>BepInEx 6 IL2CPP, be.788 or newer</dd>
+    <dt>Toggle</dt><dd>F7 (configurable)</dd>
+    <dt>Install size</dt><dd>one 28 KB DLL</dd>
+    <dt>Game files changed</dt><dd>none</dd>
+  </dl></div>
+</header>
+
+<section id="install">
+  <h2>Install</h2>
+  <ol class="steps">
+    <li><div>Install <strong>BepInEx 6 IL2CPP</strong> (tested with 6.0.0-be.788) and run the game once.</div></li>
+    <li><div>Merge the release zip's <code>BepInEx</code> folder into the game folder: <code>BepInEx\plugins\AL_CheatMenu\AL_CheatMenu.dll</code>.</div></li>
+    <li><div>Load a save and press <kbd>F7</kbd>. Key and window scale live in <code>BepInEx\config\fusionpoo.al.cheatmenu.cfg</code>.</div></li>
+  </ol>
+  <p class="prose">Uninstall: delete <code>BepInEx\plugins\AL_CheatMenu</code>. Everything the window changes is in memory until you <strong>save the game</strong>.</p>
+</section>
+
+<section id="features">
+  <h2>What's in the window</h2>
+  <div class="cols">
+    <div class="card"><h3>Heroines</h3><p>One panel per heroine in the loaded save. Favorability, Inclusiveness, Proactivity and Curiosity each get level −/+, Max, add points and reset; levels and point totals come from the game's own <code>PropertyData</code> tables so they match what the game expects. Late points, energy, H count, massage count and the H gauge stages sit on the same panel. "Max everything" and "Refill energy" act on all heroines.</p></div>
+    <div class="card"><h3>Time &amp; flags</h3><p>Set the time of day (morning, afternoon, evening, night, night event) or advance one zone with the game's own cycle logic. Mark the tutorial done or reset it. Mark all help screens seen and add the global unlock flags.</p></div>
+    <div class="card"><h3>Behaviour</h3><p>The mouse is unlocked while the window is open, values refresh every 1.5 s so game-driven changes show up, and a status line confirms each action.</p></div>
+  </div>
+  <div class="tablewrap"><table>
+    <tr><th>Config entry</th><th>Default</th><th>Effect</th></tr>
+    <tr><td>Toggle key</td><td>F7</td><td>Any <code>KeyCode</code> name.</td></tr>
+    <tr><td>UI scale</td><td>1.0</td><td>0.6–2.5, scales the whole window.</td></tr>
+  </table></div>
+</section>
+
+<section id="how">
+  <h2>How it works</h2>
+  <div class="prose">
+    <p>A <code>MonoBehaviour</code> is injected into IL2CPP with <code>ClassInjector.RegisterTypeInIl2Cpp</code> on a persistent object; <code>Update</code> polls the toggle key through Unity's legacy <code>Input</code>, which this game still uses.</p>
+    <p>The window is uGUI + TextMeshPro built from code: Canvas, panel, header, tab row, a <code>ScrollRect</code> body and a status line. IMGUI is not an option here: the IL2CPP build stripped most of it and Il2CppInterop's unstripping fails (<code>Method unstripping failed</code>), so <code>GUILayout.Button</code> and friends throw. The TMP font asset is borrowed from the game (<code>TMP_Settings.defaultFontAsset</code>, else the first font asset in memory). Button callbacks go through <code>DelegateSupport.ConvertDelegate&lt;UnityAction&gt;</code>.</p>
+    <p>Data lives in <code>Manager.Game.Instance.SaveData</code>: <code>NPCDataList</code> entries carry <code>GameParameter</code> (the four stats as <code>ParameterInfo {Point, LV, IsMaxLv}</code>, <code>LatePoint</code>, <code>Cost</code>), <code>GameCount</code> (<code>H</code>, <code>Massage</code>) and <code>HParameter.GaugeStage[]</code>; <code>SaveData.Cycle.TimeZone</code> holds the time of day; <code>Manager.Game.Instance.GlobalData</code> holds help-seen and unlock flags. Level tables come from <code>AL.PropertyData.Instance.GetPointParameter(i)</code>.</p>
+<pre><code>dotnet build -c Release -p:GameDir="D:\Games\AmanatsuLocation" src/AL_CheatMenu.csproj</code></pre>
+  </div>
+</section>
+
+<section id="troubleshooting">
+  <h2>Troubleshooting</h2>
+  <details><summary>F7 does nothing</summary><p>Check <code>BepInEx\LogOutput.log</code> for <code>AL Cheat Menu … loaded</code>. If another plugin or the game binds F7, change "Toggle key" in the config.</p></details>
+  <details><summary>The window opens but the text is invisible</summary><p>No TextMeshPro font asset was found to borrow. The About tab prints which font it uses; send the log.</p></details>
+  <details><summary>"No save data loaded yet"</summary><p>The window reads the live save; load or start a game first.</p></details>
+  <details><summary>A change didn't stick</summary><p>Save the game. Time-of-day changes apply when the game next evaluates the cycle (map or scene change).</p></details>
+</section>
+
+<section id="changelog">
+  <h2>Changelog</h2>
+  <ul class="changelog prose">
+    <li><strong>0.2.1</strong> — "Max all" sets each stat independently and logs a missing parameter instead of aborting.</li>
+    <li><strong>0.2.0</strong> — rebuilt on uGUI + TextMeshPro; cursor unlock while open; periodic refresh.</li>
+    <li><strong>0.1.0</strong> — first version (IMGUI): heroine stats, time, flags.</li>
+  </ul>
+</section>
+
+<footer>By fusionpoo with Claude. MIT.</footer>
+</div>
+</body>
+</html>
