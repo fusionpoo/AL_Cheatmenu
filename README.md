@@ -1,9 +1,9 @@
-# AL_CheatMenu — in-game cheat window for Amanatsu Location
+# AL_Cheatmenu — in-game cheat window for Amanatsu Location
 
 BepInEx 6 IL2CPP plugin for **Amanatsu Location** (ILLGAMES). Press **F7** in game.
 
-**[Download the latest release](https://github.com/__GH_USER__/AL_CheatMenu/releases/latest)** ·
-**[Documentation](https://__GH_USER__.github.io/AL_CheatMenu/)**
+**[Download the latest release](https://github.com/fusionpoo/AL_Cheatmenu/releases/latest)** ·
+**[Documentation](https://fusionpoo.github.io/AL_Cheatmenu/)**
 
 ## Features
 - **Heroines** — per heroine in the loaded save: Favorability / Inclusiveness / Proactivity / Curiosity
@@ -16,13 +16,13 @@ Everything edits the live save in memory — **save the game afterwards** to kee
 
 ## Install
 1. Install **BepInEx 6 IL2CPP** (tested with 6.0.0-be.788) and run the game once.
-2. Merge the release zip's `BepInEx` folder into the game folder (`BepInEx\plugins\AL_CheatMenu\AL_CheatMenu.dll`).
+2. Merge the release zip's `BepInEx` folder into the game folder (`BepInEx\plugins\AL_Cheatmenu\AL_Cheatmenu.dll`).
 3. Press F7 in game. Key and window scale: `BepInEx\config\fusionpoo.al.cheatmenu.cfg`.
 
-Uninstall: delete `BepInEx\plugins\AL_CheatMenu`.
+Uninstall: delete `BepInEx\plugins\AL_Cheatmenu`.
 
 ## Building
-`dotnet build -c Release -p:GameDir="D:\Games\AmanatsuLocation" src/AL_CheatMenu.csproj`, or `GAME_DIR=... ./build_plugin.sh`.
+`dotnet build -c Release -p:GameDir="D:\Games\AmanatsuLocation" src/AL_Cheatmenu.csproj`, or `GAME_DIR=... ./build_plugin.sh`.
 The technical notes (why IMGUI can't be used in this game, which save classes are edited) are on the Pages site.
 
 ## License
